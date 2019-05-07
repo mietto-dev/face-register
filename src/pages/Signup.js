@@ -23,7 +23,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Fade from '@material-ui/core/Fade';
 
 import Camera from 'react-html5-camera-photo';
-import 'react-html5-camera-photo/build/css/index.css';
+import '../camera.css';
+
+
+import FormData from 'form-data';
+import axios from 'axios'
+
 
 // import Back from '../components/common/Back';
 
@@ -113,6 +118,11 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column'
+  },
+  done: {
+    width: '100px',
+    height: '100px',
+    fill: '#4dd4a7'
   }
 })
 
@@ -128,27 +138,27 @@ class Signup extends Component {
 
   state = {
     activeStep: 0,
-    receivingAccount: '',
+    receivingAccount: '', 
     termsChecked: false,
     loading: true,
     labelWidth: 0,
     pictureArray: [],
     modalPicture: '',
     modalOpen: false,
-    modalPictureIndex: 0
+    modalPictureIndex: 0,
+    userId: this.props.match.params.userId
   }
 
   componentDidMount() {
-
   }
 
   handleNext = () => {
     this.setState(state => ({
       activeStep: state.activeStep + 1,
     }));
-    // if(this.state.activeStep === 2) {
-    //   setTimeout(() => this.props.history.push('/dashboard'), 5000)
-    // }
+    if(this.state.activeStep === 2) {
+       this.submitPictures()
+   }
   };
 
   handleBack = () => {
@@ -185,7 +195,6 @@ class Signup extends Component {
   }
 
   onTakePhoto (base64picture) {
-    //console.log(dataUri);
     if(this.state.pictureArray.length < 24) {
       this.setState(state => {   
         state.pictureArray.push(base64picture)
@@ -214,7 +223,35 @@ class Signup extends Component {
   validatePictures = event => {
     if(this.state.pictureArray.length  < 6) {
       console.error('Picutures < 6')
+    } 
+  }
+
+  submitPictures = event => {
+    let data = new FormData();
+    //let URL = 'http://ec2-18-234-203-116.compute-1.amazonaws.com/add-person'
+    let URL = 'https://d3hrgbj4h2mmru.cloudfront.net/add-person'
+
+    data.append('userId', this.state.userId)
+
+    for(let i = 0; i < this.state.pictureArray.length; i++) {
+      let pic = this.state.pictureArray[i];
+      data.append('file_' + i, pic);
+     
     }
+    axios.post(URL, data, {
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': `multipart/form-data;`, 
+      }
+    })
+    .then((response) => {
+      //handle success
+      this.handleNext() 
+    }).catch((error) => {
+      //handle error
+      console.error(error)
+    });
+    
   }
 
   render() {
@@ -323,8 +360,7 @@ class Signup extends Component {
                         </div>
                         <Camera
                           onTakePhoto = { (dataUri) => { this.onTakePhoto(dataUri); } }
-
-                        />
+                          />
                         <div style={{textAlign: 'center'}}>
                           {this.state.pictureArray.map((base64picture, index) => (
                             <img src={base64picture} width={50} key={index} id={index} onClick={this.showModal} style={{margin: 3}} />
@@ -386,7 +422,36 @@ class Signup extends Component {
                     </Paper>
                     </div>
                   )}
-                  { activeStep !== 3 && (
+                  { activeStep === 4 && (
+                  <div className={classes.bigContainer}>
+                    <Paper className={classes.paper}>
+                      <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <div style={{width: 380, textAlign: 'center'}}>
+                          <div style={{marginBottom: 32}}>
+                            <Typography variant="h6" style={{fontWeight: 'bold'}} gutterBottom>
+                              Sucesso!
+                            </Typography>
+                            <Typography variant="body1" gutterBottom>
+                              Em breve você receberá um link para testar o reconhecimento
+                            </Typography>
+                          </div>
+                          <div> 
+                            <Fade
+                              in={loading}
+                              style={{
+                                transitionDelay: loading ? '800ms' : '0ms',
+                              }}
+                              unmountOnExit
+                            >
+                              <DoneIcon className={classes.done} />
+                            </Fade>
+                          </div>
+                        </div>
+                      </div>
+                    </Paper>
+                    </div>
+                  )}
+                  { activeStep !== 3 && activeStep !== 4 && (
                      <div className={classes.buttonBar}>
                       <Button
                       onClick={this.handleBack}

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import './App.css';
+import './camera.css';
 import Routes from './routes'
 import { blue } from '@material-ui/core/colors'
+
 
 const theme = createMuiTheme({
   palette: {

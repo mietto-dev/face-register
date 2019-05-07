@@ -11,7 +11,7 @@ export default props => (
     <HashRouter>
       <ScrollToTop>
         <Switch>
-          <Route exact path='/' component={ Signup } />
+          <Route exact path='/:userId?' component={ Signup } />
         </Switch>
       </ScrollToTop>
     </HashRouter>
