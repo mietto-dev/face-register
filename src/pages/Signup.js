@@ -19,6 +19,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DoneIcon from '@material-ui/icons/Done';
+import ErrorIcon from '@material-ui/icons/Error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fade from '@material-ui/core/Fade';
 
@@ -123,6 +124,11 @@ const styles = theme => ({
     width: '100px',
     height: '100px',
     fill: '#4dd4a7'
+  },
+  error: {
+    width: '100px',
+    height: '100px',
+    fill: '#ff7600'
   }
 })
 
@@ -146,19 +152,23 @@ class Signup extends Component {
     modalPicture: '',
     modalOpen: false,
     modalPictureIndex: 0,
-    userId: this.props.match.params.userId
+    userId: this.props.match.params.userId,
+    errored: false
   }
 
   componentDidMount() {
   }
 
-  handleNext = () => {
-    this.setState(state => ({
-      activeStep: state.activeStep + 1,
-    }));
-    if(this.state.activeStep === 2) {
-       this.submitPictures()
-   }
+  handleNext = (error) => {
+      this.setState(state => ({
+        activeStep: state.activeStep + 1,
+        errored: error
+      }));
+      if(this.state.activeStep === 2) {
+         this.submitPictures()
+      }
+    
+    
   };
 
   handleBack = () => {
@@ -229,7 +239,8 @@ class Signup extends Component {
   submitPictures = event => {
     let data = new FormData();
     //let URL = 'http://ec2-18-234-203-116.compute-1.amazonaws.com/add-person'
-    let URL = 'https://d3hrgbj4h2mmru.cloudfront.net/add-person'
+    //let URL = 'https://d3hrgbj4h2mmru.cloudfront.net/add-person'
+    let URL = 'http://localhost:8080/add-person'
 
     data.append('userId', this.state.userId)
 
@@ -246,10 +257,11 @@ class Signup extends Component {
     })
     .then((response) => {
       //handle success
-      this.handleNext() 
+      this.handleNext()
     }).catch((error) => {
       //handle error
       console.error(error)
+      this.handleNext(true)
     });
     
   }
@@ -443,7 +455,7 @@ class Signup extends Component {
                               }}
                               unmountOnExit
                             >
-                              <DoneIcon className={classes.done} />
+                            {this.state.errored ? <ErrorIcon className={classes.error} /> : <DoneIcon className={classes.done} />}  
                             </Fade>
                           </div>
                         </div>
