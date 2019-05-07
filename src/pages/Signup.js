@@ -30,6 +30,8 @@ import '../camera.css';
 import FormData from 'form-data';
 import axios from 'axios'
 
+const baseURL = 'https://d3hrgbj4h2mmru.cloudfront.net'
+//const baseURL = 'http://localhost:8080'
 
 // import Back from '../components/common/Back';
 
@@ -153,10 +155,12 @@ class Signup extends Component {
     modalOpen: false,
     modalPictureIndex: 0,
     userId: this.props.match.params.userId,
-    errored: false
+    errored: false,
+    username: '--'
   }
 
   componentDidMount() {
+    this.getUser()
   }
 
   handleNext = (error) => {
@@ -236,11 +240,23 @@ class Signup extends Component {
     } 
   }
 
+  getUser = () => {
+    let URL = baseURL + '/users/' + this.state.userId
+    axios.get(URL, {
+    })
+    .then((response) => {
+      //handle success
+      console.log(response)
+      this.setState({ username: response.data.user.name })
+    }).catch((error) => {
+      console.error(error)
+    });
+  }
+
   submitPictures = event => {
     let data = new FormData();
-    //let URL = 'http://ec2-18-234-203-116.compute-1.amazonaws.com/add-person'
-    //let URL = 'https://d3hrgbj4h2mmru.cloudfront.net/add-person'
-    let URL = 'http://localhost:8080/add-person'
+    //let URL = baseURL + '/add-person'
+    let URL = baseURL + '/add-person'
 
     data.append('userId', this.state.userId)
 
@@ -301,7 +317,7 @@ class Signup extends Component {
                       <Grid item container xs={12}>
                         <Grid item xs={12}>
                           <Typography variant="subtitle1" gutterBottom>
-                            Olá Felipe,
+                            Olá {this.state.username},
                           </Typography>
                           <Typography variant="body1" gutterBottom>
                             A Bett Educar, em parceria com a Microsoft e a FCamara, está 
