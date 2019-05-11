@@ -267,10 +267,13 @@ class Signup extends Component {
     //let URL = baseURL + '/add-person'
     let URL = baseURL + "/add-person";
 
-    data.append("user", {
-      name: this.state.fullName,
-      email: this.state.email
-    });
+    data.append(
+      "user",
+      JSON.stringify({
+        name: this.state.fullName,
+        email: this.state.email
+      })
+    );
 
     for (let i = 0; i < this.state.pictureArray.length; i++) {
       let pic = this.state.pictureArray[i];
