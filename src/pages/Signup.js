@@ -29,8 +29,8 @@ import "../camera.css";
 import FormData from "form-data";
 import axios from "axios";
 
-//const baseURL = 'https://d3hrgbj4h2mmru.cloudfront.net'
-const baseURL = "http://localhost:8080";
+const baseURL = "https://d3hrgbj4h2mmru.cloudfront.net";
+//const baseURL = "http://localhost:8080";
 
 // import Back from '../components/common/Back';
 
